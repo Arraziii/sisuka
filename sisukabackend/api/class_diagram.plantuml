@@ -1,0 +1,69 @@
+@startuml classDiagram
+
+skinparam classAttributeIconSize 0
+
+class admins {
+  + id: INT <<PK>>
+  --
+  + name: VARCHAR(80)
+  + username: VARCHAR(255) <<UNIQUE>>
+  + password: VARCHAR(255)
+  + created_at: TIMESTAMP
+  + updated_at: TIMESTAMP
+}
+
+class data_dynamics{
+  + id : INT <<PK>>
+  --
+  + name: VARCHAR(50)
+  + type : VARCHAR(50)
+  + created_at: TIMESTAMP
+  + updated_at: TIMESTAMP
+}
+
+class categories{
+  + id : INT <<PK>>
+  --
+  + name: VARCHAR(50)
+  + created_at: TIMESTAMP
+  + updated_at: TIMESTAMP
+}
+
+class contents {
+  + id : INT <<PK>>
+  --
+  + title: VARCHAR(150)
+  + content: TEXT
+  + image: TEXT
+  # category_id: INT <<FK>>
+  # created_by: INT <<FK>>
+  + created_at: TIMESTAMP
+  + updated_at: TIMESTAMP
+}
+
+class staff_structures{
+  + id : INT <<PK>>
+  --
+  + name: VARCHAR(50)
+  + type : VARCHAR(50)
+  + image : VARCHAR(100)
+  + created_at: TIMESTAMP
+  + updated_at: TIMESTAMP
+}
+
+class refresh_tokens {
+  + admin_id: INT <<PK>> <<FK>>
+  --
+  + token: TEXT
+  + status_logout: TINYINT
+  + expires_at: TIMESTAMP
+  + created_at: TIMESTAMP
+}
+
+
+' Relationships
+admins "1" -- "0..*" contents : "membuat"
+categories "1" -- "0..*" contents : "membuat"
+admins "1" -- "1" refresh_tokens : "memiliki"
+
+@enduml

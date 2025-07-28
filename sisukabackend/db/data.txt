@@ -1,0 +1,77 @@
+-- Dibuat berdasarkan UML Class Diagram
+-- Dialek: MySQL / MariaDB
+
+-- Tabel untuk Admins
+-- Tabel ini tidak memiliki ketergantungan dan dapat dibuat terlebih dahulu.
+CREATE TABLE `admins` (
+    `id` INT PRIMARY KEY AUTO_INCREMENT,
+    `name` VARCHAR(80) NOT NULL,
+    `username` VARCHAR(255) NOT NULL UNIQUE,
+    `password` VARCHAR(255) NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Tabel untuk Categories
+-- Tabel ini tidak memiliki ketergantungan.
+CREATE TABLE `categories` (
+    `id` INT PRIMARY KEY AUTO_INCREMENT,
+    `name` VARCHAR(50) NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Tabel untuk Data Dynamics
+-- Tabel ini tidak memiliki ketergantungan. Diasumsikan <<PR>> adalah <<PK>>.
+CREATE TABLE `data_dynamics` (
+    `id` INT PRIMARY KEY AUTO_INCREMENT,
+    `name` VARCHAR(50) NOT NULL,
+    `type` VARCHAR(50),
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Tabel untuk Staff Structures
+-- Tabel ini tidak memiliki ketergantungan.
+CREATE TABLE `staff_structures` (
+    `id` INT PRIMARY KEY AUTO_INCREMENT,
+    `name` VARCHAR(50) NOT NULL,
+    `type` VARCHAR(50),
+    `image` VARCHAR(100),
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Tabel untuk Contents
+-- Tabel ini memiliki foreign key yang merujuk ke 'admins' dan 'categories'.
+-- Harus dibuat setelah 'admins' dan 'categories' dibuat.
+CREATE TABLE `contents` (
+    `id` INT PRIMARY KEY AUTO_INCREMENT,
+    `title` VARCHAR(150) NOT NULL,
+    `content` TEXT NOT NULL,
+    `image` TEXT,
+    `category_id` INT,
+    `created_by` INT,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT `fk_contents_category`
+        FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`)
+        ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT `fk_contents_admin`
+        FOREIGN KEY (`created_by`) REFERENCES `admins`(`id`)
+        ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+-- Tabel untuk Refresh Tokens
+-- Tabel ini memiliki foreign key yang merujuk ke 'admins'.
+-- Hubungan 1-ke-1 diimplementasikan dengan menjadikan 'admin_id' sebagai Primary Key sekaligus Foreign Key.
+CREATE TABLE `refresh_tokens` (
+    `admin_id` INT PRIMARY KEY,
+    `token` TEXT NOT NULL,
+    `status_logout` TINYINT(1) DEFAULT 0,
+    `expires_at` TIMESTAMP NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT `fk_tokens_admin`
+        FOREIGN KEY (`admin_id`) REFERENCES `admins`(`id`)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
